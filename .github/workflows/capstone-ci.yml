@@ -1,0 +1,31 @@
+name: Capstone CI
+on:
+  push:
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install backend dependencies
+        run: npm install --ignore-scripts
+        working-directory: secondChance-backend
+      - name: Check backend syntax
+        run: |
+          node --check app.js
+          node --check models/db.js
+          node --check routes/authRoutes.js
+          node --check routes/searchRoutes.js
+          node --check routes/secondChanceItemsRoutes.js
+        working-directory: secondChance-backend
+      - name: Install sentiment dependencies
+        run: npm install --ignore-scripts
+        working-directory: sentiment
+      - name: Check sentiment syntax
+        run: node --check index.js
+        working-directory: sentiment

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Second Chance — Give good things a new home</title>
+  <style>
+    :root { font-family: Inter, system-ui, sans-serif; color: #17322b; background: #f5f8f3; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; }
+    header { padding: 28px max(5vw, 30px); display: flex; align-items: center; justify-content: space-between; }
+    .brand { font-size: 1.25rem; font-weight: 800; letter-spacing: -.04em; }
+    .brand span { color: #3d8b67; }
+    nav a { color: #17322b; text-decoration: none; font-weight: 600; }
+    main { max-width: 1200px; margin: 3vh auto 0; padding: 0 5vw; }
+    .hero { border-radius: 32px; background: linear-gradient(120deg,#dceee0,#e9f2de 55%,#c9e4d5); padding: clamp(42px,8vw,110px); min-height: 520px; display: flex; align-items: center; }
+    .copy { max-width: 650px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .18em; font-size: .8rem; font-weight: 800; color: #39755b; }
+    h1 { font-size: clamp(3rem,7vw,6.4rem); line-height: .98; letter-spacing: -.065em; margin: 20px 0 26px; }
+    p { font-size: clamp(1.05rem,1.65vw,1.25rem); line-height: 1.65; color: #466257; margin: 0 0 32px; }
+    .button { display: inline-block; background: #173d31; color: white; border-radius: 100px; padding: 17px 30px; text-decoration: none; font-weight: 750; box-shadow: 0 12px 25px #173d3122; }
+    .button:hover { background: #276346; }
+    .cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; padding: 24px 0 60px; }
+    .card { border: 1px solid #dce8dc; border-radius: 20px; background: white; padding: 28px; }
+    .card strong { display: block; font-size: 1.2rem; margin-bottom: 8px; }
+    .card span { color: #61776c; line-height: 1.5; }
+    @media(max-width:700px) { .cards { grid-template-columns: 1fr; } .hero { min-height: 460px; } }
+  </style>
+</head>
+<body>
+  <header><div class="brand">Second<span>Chance</span></div><nav><a href="#how-it-works">How it works</a></nav></header>
+  <main>
+    <section class="hero">
+      <div class="copy">
+        <div class="eyebrow">A more thoughtful marketplace</div>
+        <h1>Give good things a new home.</h1>
+        <p>Discover useful pre-loved items, share what you no longer need, and help your community waste less.</p>
+        <a class="button" href="#how-it-works">Get Started →</a>
+      </div>
+    </section>
+    <section class="cards" id="how-it-works">
+      <div class="card"><strong>Discover</strong><span>Find items by category and explore their details.</span></div>
+      <div class="card"><strong>Share</strong><span>Give your unused items a second chance.</span></div>
+      <div class="card"><strong>Connect</strong><span>Help your neighborhood reuse more together.</span></div>
+    </section>
+  </main>
+</body>
+</html>

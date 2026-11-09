@@ -5,6 +5,20 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      MONGO_URL: mongodb://127.0.0.1:27017
+      MONGO_DB: secondChance
+      JWT_SECRET: ci-test-secret
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -23,9 +37,48 @@ jobs:
           node --check routes/searchRoutes.js
           node --check routes/secondChanceItemsRoutes.js
         working-directory: secondChance-backend
+      - name: Import 16 MongoDB items
+        run: node util/import-mongo/index.js | tee inserted_items
+        working-directory: secondChance-backend
+      - name: Start backend API
+        run: |
+          nohup node app.js > server.log 2>&1 &
+          sleep 3
+          curl -fsS http://127.0.0.1:3060/api/secondchance/items > /dev/null
+        working-directory: secondChance-backend
+      - name: Capture cURL API evidence
+        run: |
+          echo 'curl http://127.0.0.1:3060/api/secondchance/items' | tee mainpage
+          curl -fsS http://127.0.0.1:3060/api/secondchance/items | tee -a mainpage
+          echo
+          echo 'curl -X POST http://127.0.0.1:3060/api/auth/register' | tee register
+          curl -fsS -X POST http://127.0.0.1:3060/api/auth/register -H 'Content-Type: application/json' -d '{"firstName":"CI","lastName":"User","email":"ci-user@example.test","password":"ci-test-password"}' | tee -a register
+          echo
+          echo 'curl -X POST http://127.0.0.1:3060/api/auth/login' | tee login
+          curl -fsS -X POST http://127.0.0.1:3060/api/auth/login -H 'Content-Type: application/json' -d '{"email":"ci-user@example.test","password":"ci-test-password"}' | tee -a login
+          echo
+          ITEM_ID=$(curl -fsS http://127.0.0.1:3060/api/secondchance/items | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>console.log(JSON.parse(s)[0]._id))")
+          echo "curl http://127.0.0.1:3060/api/secondchance/items/$ITEM_ID" | tee item_detail
+          curl -fsS "http://127.0.0.1:3060/api/secondchance/items/$ITEM_ID" | tee -a item_detail
+          echo
+          echo 'curl -G --data-urlencode category=Kitchen http://127.0.0.1:3060/api/secondchance/search' | tee search_item
+          curl -fsS -G --data-urlencode category=Kitchen http://127.0.0.1:3060/api/secondchance/search | tee -a search_item
+          echo
+        working-directory: secondChance-backend
       - name: Install sentiment dependencies
         run: npm install --ignore-scripts
         working-directory: sentiment
       - name: Check sentiment syntax
         run: node --check index.js
         working-directory: sentiment
+      - name: Upload evidence files
+        uses: actions/upload-artifact@v4
+        with:
+          name: capstone-evidence
+          path: |
+            secondChance-backend/inserted_items
+            secondChance-backend/mainpage
+            secondChance-backend/register
+            secondChance-backend/login
+            secondChance-backend/item_detail
+            secondChance-backend/search_item
